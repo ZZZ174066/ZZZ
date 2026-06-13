@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZZZ的空间</title>
+  <link rel="preload" href="https://cdn.jsdelivr.net/gh/SolidZORO/zpix-pixel-font@v3.1.9/dist/zpix.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="intro">
+    <main id="main">
+      <canvas id="blackhole-canvas"></canvas>
+
+      <div id="avatar-wrapper">
+        <img id="avatar" src="files/ZZZ.png" alt="ZZZ" title="跳过动画">
+      </div>
+
+      <p id="welcome-text"></p>
+    </main>
+  </div>
+
+  <div id="app">
+    <header class="site-header">
+      <div class="header-avatar">
+        <img src="files/ZZZ.png" alt="ZZZ">
+      </div>
+      <div class="header-body">
+        <p class="header-motto">
+          <span id="motto-text"></span><span class="motto-cursor">|</span>
+        </p>
+        <nav class="header-nav">
+          <button type="button" class="ui-btn ui-interactive nav-btn active" data-section="projects">项目分享</button>
+          <button type="button" class="ui-btn ui-interactive nav-btn" data-section="music">音乐分享</button>
+          <button type="button" class="ui-btn ui-interactive nav-btn" data-section="games">游戏分享</button>
+          <button type="button" class="ui-btn ui-interactive nav-btn" data-section="anime">动漫分享</button>
+          <button type="button" class="ui-btn ui-interactive nav-btn" data-section="images">图片分享</button>
+          <button type="button" class="ui-btn ui-interactive nav-btn" data-section="links">网站分享</button>
+          <button type="button" class="ui-btn ui-interactive nav-btn" data-section="about">关于个人</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="site-main">
+      <div class="module-panel">
+        <div class="module-content" id="module-content">
+          <section class="module-section active" data-section="projects">
+            <div class="project-layout">
+              <aside class="project-list-col project-panel-box">
+                <div class="project-list-title">项目列表</div>
+                <div class="project-list-items" id="project-list"></div>
+              </aside>
+              <div class="project-detail-col" id="project-detail"></div>
+            </div>
+          </section>
+          <section class="module-section" data-section="music">
+            <div class="music-layout">
+              <aside class="music-list-col music-panel-box">
+                <div class="music-list-filters">
+                  <div class="music-filter">
+                    <button type="button" class="music-filter-btn ui-interactive" id="musicFilterAuthorBtn" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="music-filter-label">筛选作者</span>
+                    </button>
+                    <div class="music-filter-panel" id="musicFilterAuthorPanel" role="listbox" hidden></div>
+                  </div>
+                  <div class="music-filter">
+                    <button type="button" class="music-filter-btn ui-interactive" id="musicFilterSingerBtn" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="music-filter-label">筛选歌手</span>
+                    </button>
+                    <div class="music-filter-panel" id="musicFilterSingerPanel" role="listbox" hidden></div>
+                  </div>
+                  <div class="music-filter">
+                    <button type="button" class="music-filter-btn ui-interactive" id="musicFilterLevelBtn" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="music-filter-label">喜爱等级</span>
+                    </button>
+                    <div class="music-filter-panel" id="musicFilterLevelPanel" role="listbox" hidden></div>
+                  </div>
+                </div>
+                <div class="music-list-grid" id="music-list"></div>
+              </aside>
+              <div class="music-detail-col" id="music-detail"></div>
+            </div>
+          </section>
+          <section class="module-section" data-section="games">
+            <div class="game-layout">
+              <aside class="game-list-col game-panel-box">
+                <div class="game-list-filters">
+                  <div class="game-filter">
+                    <button type="button" class="game-filter-btn ui-interactive" id="gameFilterTagBtn" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="game-filter-label">筛选标签</span>
+                    </button>
+                    <div class="game-filter-panel" id="gameFilterTagPanel" role="listbox" hidden></div>
+                  </div>
+                  <div class="game-filter">
+                    <button type="button" class="game-filter-btn ui-interactive" id="gameFilterPriceBtn" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="game-filter-label">筛选价格</span>
+                    </button>
+                    <div class="game-filter-panel" id="gameFilterPricePanel" role="listbox" hidden></div>
+                  </div>
+                  <div class="game-filter">
+                    <button type="button" class="game-filter-btn ui-interactive" id="gameFilterRatingBtn" aria-haspopup="listbox" aria-expanded="false">
+                      <span class="game-filter-label">推荐指数</span>
+                    </button>
+                    <div class="game-filter-panel" id="gameFilterRatingPanel" role="listbox" hidden></div>
+                  </div>
+                </div>
+                <div class="game-list-grid" id="game-list"></div>
+              </aside>
+              <div class="game-detail-col game-panel-box" id="game-detail"></div>
+            </div>
+          </section>
+          <section class="module-section" data-section="anime">
+            <h2 class="module-title">动漫分享</h2>
+            <p class="module-placeholder">此处展示动漫内容。</p>
+          </section>
+          <section class="module-section" data-section="images">
+            <div class="picture-layout">
+              <div class="picture-filters">
+                <div class="picture-filter-row" id="picture-filter-primary"></div>
+                <div class="picture-filter-row picture-filter-row-secondary" id="picture-filter-secondary"></div>
+              </div>
+              <div class="picture-grid" id="picture-grid"></div>
+            </div>
+          </section>
+          <section class="module-section" data-section="links">
+            <div class="web-layout" id="web-layout"></div>
+          </section>
+          <section class="module-section" data-section="about">
+            <h2 class="module-title">关于个人</h2>
+            <p class="module-placeholder">此处展示个人介绍。</p>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="filter-layer" class="filter-layer" aria-hidden="true"></div>
+
+  <div id="image-preview" class="image-preview" hidden>
+    <button type="button" class="image-preview-close ui-btn ui-interactive" aria-label="关闭">×</button>
+    <img class="image-preview-img" src="" alt="">
+    <video class="image-preview-video" hidden playsinline loop controls></video>
+  </div>
+
+  <script>
+    (function () {
+      const canvas = document.getElementById('blackhole-canvas');
+      const ctx = canvas.getContext('2d');
+      const avatar = document.getElementById('avatar');
+      const avatarWrapper = document.getElementById('avatar-wrapper');
+      const welcomeText = document.getElementById('welcome-text');
+
+      const WELCOME_MSG = '欢迎进入ZZZ的空间';
+      const PARTICLE_COUNT = 800;
+      const FORWARD_DURATION = 2800;
+      const REVERSE_DURATION = 2200;
+      const AVATAR_GROW_START = 1200;
+      const AVATAR_GROW_END = 2800;
+      const AVATAR_FINAL_SIZE = 160;
+
+      const intro = document.getElementById('intro');
+      const app = document.getElementById('app');
+
+      let particles = [];
+      let animationId = null;
+      let startTime = null;
+      let phase = 'forward';
+      let reverseStartTime = null;
+      let typewriterIndex = 0;
+      let typewriterTimer = null;
+      let holdTimer = null;
+      let enterAppTimer = null;
+      let hasEnteredApp = false;
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+
+      function createParticles() {
+        particles = [];
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 2 + Math.random() * 8;
+          const hue = 180 + Math.random() * 60;
+          particles.push({
+            angle,
+            speed,
+            distance: Math.random() * 20,
+            maxDistance: 300 + Math.random() * Math.max(canvas.width, canvas.height) * 0.6,
+            size: 0.5 + Math.random() * 2.5,
+            hue,
+            brightness: 60 + Math.random() * 40,
+            trail: 0.3 + Math.random() * 0.7,
+            delay: Math.random() * 400
+          });
+        }
+      }
+
+      function easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
+      }
+
+      function easeInCubic(t) {
+        return t * t * t;
+      }
+
+      function getCenter() {
+        return { x: canvas.width / 2, y: canvas.height / 2 };
+      }
+
+      function drawParticles(elapsed, isReverse, reverseElapsed) {
+        const { x: cx, y: cy } = getCenter();
+        const globalT = isReverse
+          ? Math.min(reverseElapsed / REVERSE_DURATION, 1)
+          : Math.min(elapsed / FORWARD_DURATION, 1);
+
+        particles.forEach(p => {
+          const localElapsed = isReverse ? reverseElapsed : elapsed - p.delay;
+          if (!isReverse && localElapsed < 0) return;
+
+          let dist;
+          if (isReverse) {
+            const t = easeInCubic(globalT);
+            dist = p.maxDistance * (1 - t);
+          } else {
+            const t = easeOutCubic(Math.min(localElapsed / (FORWARD_DURATION * 0.85), 1));
+            dist = t * p.maxDistance;
+          }
+
+          const spiral = isReverse ? globalT * 0.8 : 0;
+          const angle = p.angle + spiral;
+          const px = cx + Math.cos(angle) * dist;
+          const py = cy + Math.sin(angle) * dist;
+
+          const alpha = isReverse
+            ? Math.min(1, (1 - globalT) * 1.5 + 0.1) * Math.min(dist / 80, 1)
+            : Math.min(1, (1 - dist / p.maxDistance) * 0.6 + 0.4) * Math.min(localElapsed / 600, 1);
+
+          if (alpha <= 0.02 || dist < 2) return;
+
+          const trailLen = dist * p.trail * 0.15 + 8;
+          const tx = cx + Math.cos(angle) * Math.max(0, dist - trailLen);
+          const ty = cy + Math.sin(angle) * Math.max(0, dist - trailLen);
+
+          const grad = ctx.createLinearGradient(tx, ty, px, py);
+          grad.addColorStop(0, `hsla(${p.hue}, 90%, ${p.brightness}%, 0)`);
+          grad.addColorStop(0.6, `hsla(${p.hue}, 95%, ${p.brightness + 10}%, ${alpha * 0.6})`);
+          grad.addColorStop(1, `hsla(${p.hue}, 100%, 95%, ${alpha})`);
+
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = p.size;
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.moveTo(tx, ty);
+          ctx.lineTo(px, py);
+          ctx.stroke();
+        });
+      }
+
+      function setAvatarGlow(progress) {
+        const glow = easeOutCubic(progress);
+        const blur1 = 30 * glow;
+        const blur2 = 60 * glow;
+        avatarWrapper.style.filter =
+          `drop-shadow(0 0 ${blur1}px rgba(80, 160, 255, ${glow * 0.4})) ` +
+          `drop-shadow(0 0 ${blur2}px rgba(40, 100, 220, ${glow * 0.2}))`;
+        avatar.style.borderColor = `rgba(100, 180, 255, ${glow * 0.3})`;
+      }
+
+      function updateAvatar(elapsed) {
+        if (elapsed < AVATAR_GROW_START) {
+          avatarWrapper.style.opacity = '0';
+          avatarWrapper.style.transform = 'translate(-50%, -50%) scale(0)';
+          avatarWrapper.style.filter = 'none';
+          avatar.style.borderColor = 'rgba(100, 180, 255, 0)';
+          return;
+        }
+
+        const growProgress = Math.min(
+          (elapsed - AVATAR_GROW_START) / (AVATAR_GROW_END - AVATAR_GROW_START),
+          1
+        );
+        const scale = easeOutCubic(growProgress);
+        const size = AVATAR_FINAL_SIZE * scale;
+
+        avatar.style.width = size + 'px';
+        avatar.style.height = size + 'px';
+        avatarWrapper.style.opacity = String(Math.min(growProgress * 2, 1));
+        avatarWrapper.style.transform = `translate(-50%, -50%) scale(${scale})`;
+        setAvatarGlow(growProgress);
+      }
+
+      function enterApp() {
+        if (hasEnteredApp) return;
+        hasEnteredApp = true;
+        phase = 'entered';
+
+        cancelAnimationFrame(animationId);
+        clearTimeout(typewriterTimer);
+        clearTimeout(holdTimer);
+        clearTimeout(enterAppTimer);
+
+        intro.classList.add('fade-out');
+        app.classList.add('visible');
+        document.body.classList.add('app-active');
+
+        intro.addEventListener('transitionend', () => {
+          intro.classList.add('hidden');
+        }, { once: true });
+
+        if (window.initAppHeader) window.initAppHeader();
+      }
+
+      function skipAnimation() {
+        if (hasEnteredApp) return;
+        enterApp();
+      }
+
+      function startTypewriter() {
+        welcomeText.classList.add('visible');
+        typewriterIndex = 0;
+        welcomeText.textContent = '';
+
+        function type() {
+          if (hasEnteredApp) return;
+
+          if (typewriterIndex < WELCOME_MSG.length) {
+            welcomeText.textContent += WELCOME_MSG[typewriterIndex];
+            typewriterIndex++;
+            typewriterTimer = setTimeout(type, 120);
+          } else {
+            enterAppTimer = setTimeout(enterApp, 600);
+          }
+        }
+
+        type();
+      }
+
+      function animate(timestamp) {
+        if (hasEnteredApp) return;
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        if (phase === 'forward') {
+          drawParticles(elapsed, false, 0);
+          updateAvatar(elapsed);
+
+          if (elapsed >= FORWARD_DURATION) {
+            phase = 'hold';
+            avatar.style.width = AVATAR_FINAL_SIZE + 'px';
+            avatar.style.height = AVATAR_FINAL_SIZE + 'px';
+            avatarWrapper.style.opacity = '1';
+            avatarWrapper.style.transform = 'translate(-50%, -50%) scale(1)';
+            setAvatarGlow(1);
+
+            holdTimer = setTimeout(() => {
+              if (hasEnteredApp) return;
+              phase = 'reverse';
+              reverseStartTime = performance.now();
+            }, 300);
+          }
+        } else if (phase === 'hold') {
+          drawParticles(FORWARD_DURATION, false, 0);
+        } else if (phase === 'reverse') {
+          const reverseElapsed = timestamp - reverseStartTime;
+          drawParticles(0, true, reverseElapsed);
+
+          if (reverseElapsed >= REVERSE_DURATION) {
+            phase = 'done';
+            canvas.classList.add('fade-out');
+            if (!hasEnteredApp) startTypewriter();
+          }
+        } else if (phase === 'done') {
+          cancelAnimationFrame(animationId);
+          return;
+        }
+
+        animationId = requestAnimationFrame(animate);
+      }
+
+      function init() {
+        resize();
+        createParticles();
+        avatar.addEventListener('click', skipAnimation);
+        window.addEventListener('resize', () => {
+          resize();
+          if (phase === 'forward' && !startTime) createParticles();
+        });
+        requestAnimationFrame(animate);
+      }
+
+      init();
+    })();
+  </script>
+  <script>
+    (function () {
+      const mottoText = document.getElementById('motto-text');
+      const navButtons = document.querySelectorAll('.nav-btn');
+      const FIRST_MOTTO = '欢迎进入 ZZZ 的空间';
+      const TYPE_SPEED = 120;
+      const DELETE_SPEED = 80;
+      const HOLD_DURATION = 1000;
+      const MAX_MOTTO_LEN = 20;
+      const MAX_FETCH_RETRY = 8;
+
+      const FALLBACK_QUOTES = [
+        '学而不思则罔', '温故而知新', '知之为知之',
+        '行胜于言', '业精于勤荒于嬉', '天道酬勤',
+        '静以修身', '俭以养德', '志当存高远',
+        '不积跬步无以至千里', '千里之行始于足下'
+      ];
+
+      let mottoTimer = null;
+      let mottoRunning = false;
+      let isFirstMotto = true;
+      let lastMotto = '';
+
+      function sleep(ms) {
+        return new Promise(resolve => {
+          mottoTimer = setTimeout(resolve, ms);
+        });
+      }
+
+      function typeText(text) {
+        return new Promise(resolve => {
+          let i = 0;
+          mottoText.textContent = '';
+
+          function step() {
+            if (i < text.length) {
+              mottoText.textContent += text[i];
+              i++;
+              mottoTimer = setTimeout(step, TYPE_SPEED);
+            } else {
+              resolve();
+            }
+          }
+
+          step();
+        });
+      }
+
+      function deleteText() {
+        return new Promise(resolve => {
+          function step() {
+            const text = mottoText.textContent;
+            if (text.length > 0) {
+              mottoText.textContent = text.slice(0, -1);
+              mottoTimer = setTimeout(step, DELETE_SPEED);
+            } else {
+              resolve();
+            }
+          }
+
+          step();
+        });
+      }
+
+      async function fetchQuoteFromApi() {
+        const res = await fetch('https://v1.hitokoto.cn/?encode=json');
+        if (!res.ok) throw new Error('api error');
+        const data = await res.json();
+        return (data.hitokoto || '').trim();
+      }
+
+      function pickFallback(lastQuote) {
+        const pool = FALLBACK_QUOTES.filter(q => q !== lastQuote && q.length <= MAX_MOTTO_LEN);
+        if (pool.length === 0) return FALLBACK_QUOTES[0];
+        return pool[Math.floor(Math.random() * pool.length)];
+      }
+
+      async function fetchQuote(lastQuote) {
+        for (let i = 0; i < MAX_FETCH_RETRY; i++) {
+          try {
+            const text = await fetchQuoteFromApi();
+            if (text && text.length <= MAX_MOTTO_LEN && text !== lastQuote) {
+              return text;
+            }
+          } catch (e) {}
+        }
+        return pickFallback(lastQuote);
+      }
+
+      async function mottoLoop() {
+        if (!mottoRunning) return;
+
+        let next;
+        if (isFirstMotto) {
+          next = FIRST_MOTTO;
+          isFirstMotto = false;
+        } else {
+          next = await fetchQuote(lastMotto);
+        }
+
+        await typeText(next);
+        lastMotto = next;
+        await sleep(HOLD_DURATION);
+        if (!mottoRunning) return;
+        await deleteText();
+        mottoLoop();
+      }
+
+      function initNav() {
+        const moduleContent = document.getElementById('module-content');
+        const moduleSections = document.querySelectorAll('.module-section');
+
+        navButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const sectionId = btn.dataset.section;
+
+            navButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            moduleSections.forEach(section => {
+              section.classList.toggle('active', section.dataset.section === sectionId);
+            });
+
+            if (moduleContent) moduleContent.scrollTop = 0;
+          });
+        });
+      }
+
+      window.initAppHeader = function () {
+        if (mottoRunning) return;
+        mottoRunning = true;
+        mottoLoop();
+      };
+
+      initNav();
+    })();
+  </script>
+  <script src="js/common.js"></script>
+  <script src="js/project.js"></script>
+  <script src="js/music.js"></script>
+  <script src="js/games.js"></script>
+  <script src="js/picture.js"></script>
+  <script src="js/web.js"></script>
+</body>
+</html>

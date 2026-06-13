@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tsj.mapper.ContainerMapper">
+
+    <resultMap id="ContainerResultMap" type="com.tsj.entity.Container">
+        <id property="containerId" column="container_id"/>
+        <result property="containerName" column="container_name"/>
+        <result property="lengthMm" column="length_mm"/>
+        <result property="widthMm" column="width_mm"/>
+        <result property="heightMm" column="height_mm"/>
+        <result property="quantity" column="quantity"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        container_id, container_name, length_mm, width_mm, height_mm, quantity, created_at, updated_at
+    </sql>
+
+    <insert id="insert" parameterType="com.tsj.entity.Container" useGeneratedKeys="true" keyProperty="containerId">
+        INSERT INTO container (container_name, length_mm, width_mm, height_mm, quantity)
+        VALUES (#{containerName}, #{lengthMm}, #{widthMm}, #{heightMm}, #{quantity})
+    </insert>
+
+    <update id="update" parameterType="com.tsj.entity.Container">
+        UPDATE container
+        SET container_name = #{containerName},
+            length_mm = #{lengthMm},
+            width_mm = #{widthMm},
+            height_mm = #{heightMm},
+            quantity = #{quantity}
+        WHERE container_id = #{containerId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM container WHERE container_id = #{id}
+    </delete>
+
+    <select id="selectById" resultMap="ContainerResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM container
+        WHERE container_id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="ContainerResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM container
+        ORDER BY container_id DESC
+    </select>
+
+</mapper>
+

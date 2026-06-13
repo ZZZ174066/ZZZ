@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tsj.mapper.PlanItemMapper">
+
+    <resultMap id="PlanItemResultMap" type="com.tsj.entity.PlanItem">
+        <id property="id" column="id"/>
+        <result property="planId" column="plan_id"/>
+        <result property="itemId" column="item_id"/>
+        <result property="itemQty" column="item_qty"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, plan_id, item_id, item_qty
+    </sql>
+
+    <insert id="insert" parameterType="com.tsj.entity.PlanItem" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO plan_item (plan_id, item_id, item_qty)
+        VALUES (#{planId}, #{itemId}, #{itemQty})
+    </insert>
+
+    <update id="update" parameterType="com.tsj.entity.PlanItem">
+        UPDATE plan_item
+        SET plan_id = #{planId},
+            item_id = #{itemId},
+            item_qty = #{itemQty}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM plan_item WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" resultMap="PlanItemResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM plan_item
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByPlanId" resultMap="PlanItemResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM plan_item
+        WHERE plan_id = #{planId}
+        ORDER BY id
+    </select>
+
+    <select id="countByItemId" resultType="int">
+        SELECT COUNT(*) FROM plan_item WHERE item_id = #{itemId}
+    </select>
+
+</mapper>
+

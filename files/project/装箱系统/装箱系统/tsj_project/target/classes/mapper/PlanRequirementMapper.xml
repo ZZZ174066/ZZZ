@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tsj.mapper.PlanRequirementMapper">
+
+    <resultMap id="PlanRequirementResultMap" type="com.tsj.entity.PlanRequirement">
+        <id property="id" column="id"/>
+        <result property="planId" column="plan_id"/>
+        <result property="finished" column="finished"/>
+        <result property="content" column="content"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, plan_id, finished, content, created_at, updated_at
+    </sql>
+
+    <insert id="insert" parameterType="com.tsj.entity.PlanRequirement" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO plan_requirement (plan_id, finished, content)
+        VALUES (#{planId}, #{finished}, #{content})
+    </insert>
+
+    <update id="update" parameterType="com.tsj.entity.PlanRequirement">
+        UPDATE plan_requirement
+        SET plan_id = #{planId},
+            finished = #{finished},
+            content = #{content}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM plan_requirement WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" resultMap="PlanRequirementResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM plan_requirement
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByPlanId" resultMap="PlanRequirementResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM plan_requirement
+        WHERE plan_id = #{planId}
+        ORDER BY id DESC
+    </select>
+
+</mapper>
+

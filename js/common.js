@@ -333,40 +333,15 @@
     return controller;
   }
 
-  const lazySectionInits = new Map();
-
-  function registerLazySection(sectionId, initFn) {
-    if (!sectionId || typeof initFn !== 'function') return;
-    lazySectionInits.set(sectionId, { init: initFn, done: false });
-  }
-
-  function ensureLazySection(sectionId) {
-    const entry = lazySectionInits.get(sectionId);
-    if (!entry || entry.done) return;
-    entry.done = true;
-    entry.init();
-  }
-
-  function bindLazySectionNav() {
-    document.querySelectorAll('.nav-btn[data-section]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        ensureLazySection(btn.dataset.section);
-      });
-    });
-  }
-
   onDomReady(() => {
     document.querySelectorAll('.nav-btn').forEach((btn) => {
       btn.addEventListener('click', closeAllFilterPanels);
     });
-    bindLazySectionNav();
   });
 
   window.AppCommon = {
     FILTER_NONE,
     onDomReady,
-    registerLazySection,
-    ensureLazySection,
     compareByName,
     splitTokens,
     matchesFilterSet,

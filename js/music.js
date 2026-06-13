@@ -1276,5 +1276,5 @@ function initMusic() {
   renderMusicDetail(detailEl, MUSICS.find((item) => item.id === playingId), false);
 }
 
-AppCommon.registerLazySection('music', initMusic);
+AppCommon.onDomReady(initMusic);
 

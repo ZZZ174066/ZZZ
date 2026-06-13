@@ -2377,14 +2377,60 @@ const PICTURES = [
 ];
 
 const PICTURE_TAG_NONE = '暂无';
+const PICTURE_BATCH_SIZE = 30;
+const PICTURE_THUMB_WIDTH = 400;
 
 const pictureFilterState = {
   nature: PICTURE_NATURES[0],
   tag: PICTURE_TAG_NONE
 };
 
+const pictureScrollState = {
+  pictures: [],
+  renderedCount: 0,
+  loading: false
+};
+
+let pictureScrollObserver = null;
+
 function isPictureVideo(picture) {
   return /\.mp4(\?|$)/i.test(String(picture && picture.url));
+}
+
+function applyOssThumbProcess(url, width) {
+  const process = 'image/format,webp/resize,w_' + width + '/quality,q_80';
+  const qIndex = url.indexOf('?');
+  if (qIndex === -1) return url + '?x-oss-process=' + process;
+  const path = url.slice(0, qIndex);
+  const query = url.slice(qIndex + 1);
+  if (/x-oss-process=/i.test(query)) {
+    return path + '?' + query.replace(/x-oss-process=[^&]*/i, 'x-oss-process=' + process);
+  }
+  return url + '&x-oss-process=' + process;
+}
+
+function getPictureThumbUrl(url) {
+  const raw = String(url || '').trim();
+  if (!raw || /\.mp4(\?|$)/i.test(raw)) return raw;
+
+  if (/\.(mihoyo|miyoushe)\.com/i.test(raw)) {
+    return applyOssThumbProcess(raw, PICTURE_THUMB_WIDTH);
+  }
+
+  if (/hdslb\.com\/bfs\//i.test(raw)) {
+    const base = raw.split('@')[0];
+    return base + '@' + PICTURE_THUMB_WIDTH + 'w.webp';
+  }
+
+  if (/img-baofun\.zhhainiao\.com/i.test(raw) && /x-oss-process/i.test(raw)) {
+    return raw.replace(/w_\d+/i, 'w_' + PICTURE_THUMB_WIDTH);
+  }
+
+  if (/huashi6\.com/i.test(raw) && /thumbnail/i.test(raw)) {
+    return raw;
+  }
+
+  return raw;
 }
 
 function getPictureNatures(picture) {
@@ -2536,19 +2582,15 @@ function createPictureItem(picture) {
   frame.setAttribute('aria-label', '查看图片：' + pictureName);
 
   if (isPictureVideo(picture)) {
-    const video = document.createElement('video');
-    video.className = 'picture-item-media';
-    video.src = picture.url;
-    video.muted = true;
-    video.loop = true;
-    video.autoplay = true;
-    video.playsInline = true;
-    video.preload = 'metadata';
-    frame.appendChild(video);
+    const badge = document.createElement('span');
+    badge.className = 'picture-item-video-badge';
+    badge.textContent = '▶';
+    badge.setAttribute('aria-hidden', 'true');
+    frame.appendChild(badge);
   } else {
     const img = document.createElement('img');
     img.className = 'picture-item-media';
-    img.src = picture.url;
+    img.src = getPictureThumbUrl(picture.url);
     img.alt = '';
     img.loading = 'lazy';
     img.decoding = 'async';
@@ -2571,6 +2613,87 @@ function getPictureColumnCount(container) {
   const value = getComputedStyle(container).getPropertyValue('--picture-cols').trim();
   const count = parseInt(value, 10);
   return Number.isFinite(count) && count > 0 ? count : 5;
+}
+
+function appendItemsToMasonry(container, newItems) {
+  const columns = [...container.querySelectorAll('.picture-grid-column')];
+  if (!columns.length) return;
+  const colCount = columns.length;
+  const startIndex = container._masonryItems.length - newItems.length;
+  newItems.forEach((item, i) => {
+    bindPictureMasonryMedia(item, container);
+    const target = pickMasonryColumn(columns, startIndex + i, colCount, false);
+    columns[target].appendChild(item);
+  });
+}
+
+function positionPictureSentinel(container) {
+  if (!container._pictureSentinel) return;
+  container.appendChild(container._pictureSentinel);
+  if (pictureScrollObserver) pictureScrollObserver.observe(container._pictureSentinel);
+}
+
+function appendMorePictureBatch(container) {
+  const pictures = pictureScrollState.pictures;
+  if (pictureScrollState.loading || pictureScrollState.renderedCount >= pictures.length) return;
+
+  pictureScrollState.loading = true;
+  const start = pictureScrollState.renderedCount;
+  const end = Math.min(start + PICTURE_BATCH_SIZE, pictures.length);
+  const batch = pictures.slice(start, end);
+  const newItems = batch.map((picture) => createPictureItem(picture));
+
+  if (!container._masonryItems.length) {
+    container._masonryItems = newItems;
+    newItems.forEach((item) => bindPictureMasonryMedia(item, container));
+    layoutPictureMasonry(container, newItems, true);
+  } else {
+    container._masonryItems.push(...newItems);
+    appendItemsToMasonry(container, newItems);
+  }
+
+  pictureScrollState.renderedCount = end;
+  pictureScrollState.loading = false;
+  positionPictureSentinel(container);
+  queuePictureMasonryRelayout(container);
+}
+
+function bindPictureInfiniteScroll(container) {
+  if (container.dataset.infiniteScrollBound) return;
+  container.dataset.infiniteScrollBound = 'true';
+  container._pictureUserScrolled = false;
+
+  const sentinel = document.createElement('div');
+  sentinel.className = 'picture-load-sentinel';
+  sentinel.setAttribute('aria-hidden', 'true');
+  container._pictureSentinel = sentinel;
+
+  function maybeLoadMore() {
+    if (!container._pictureUserScrolled) return;
+    appendMorePictureBatch(container);
+  }
+
+  container.addEventListener('scroll', () => {
+    container._pictureUserScrolled = true;
+    if (container.scrollTop + container.clientHeight >= container.scrollHeight - 240) {
+      maybeLoadMore();
+    }
+  }, { passive: true });
+
+  if (typeof IntersectionObserver !== 'undefined') {
+    pictureScrollObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) maybeLoadMore();
+      });
+    }, { root: container, rootMargin: '240px' });
+  }
+}
+
+function resetPictureScrollObserver() {
+  if (pictureScrollObserver) {
+    pictureScrollObserver.disconnect();
+    pictureScrollObserver = null;
+  }
 }
 
 function pickMasonryColumn(columns, index, colCount, balanced) {
@@ -2598,6 +2721,7 @@ function layoutPictureMasonry(container, items, balanced) {
   items.forEach((item, index) => {
     columns[pickMasonryColumn(columns, index, colCount, balanced)].appendChild(item);
   });
+  positionPictureSentinel(container);
 }
 
 let pictureMasonryFrame = null;
@@ -2642,19 +2766,22 @@ function bindPictureMasonryMedia(item, container) {
 
 function renderPictureGrid(container) {
   const pictures = getFilteredPictures();
+  resetPictureScrollObserver();
   container.innerHTML = '';
-  container._masonryItems = null;
+  container._masonryItems = [];
+  container._pictureSentinel = null;
+  container._pictureUserScrolled = false;
+  pictureScrollState.pictures = pictures;
+  pictureScrollState.renderedCount = 0;
+  pictureScrollState.loading = false;
 
   if (!pictures.length) {
     container.innerHTML = '<p class="picture-empty">暂无图片</p>';
     return;
   }
 
-  const items = pictures.map((picture) => createPictureItem(picture));
-  container._masonryItems = items;
-  items.forEach((item) => bindPictureMasonryMedia(item, container));
-  layoutPictureMasonry(container, items, true);
-  queuePictureMasonryRelayout(container);
+  bindPictureInfiniteScroll(container);
+  appendMorePictureBatch(container);
 }
 
 function refreshPictureGrid() {
@@ -2698,4 +2825,4 @@ function initPictureModule() {
   refreshPictureModule();
 }
 
-AppCommon.onDomReady(initPictureModule);
+AppCommon.registerLazySection('images', initPictureModule);

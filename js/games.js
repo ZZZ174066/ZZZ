@@ -1293,5 +1293,5 @@ function initGames() {
   renderGameDetail(detailEl, GAMES.find((item) => item.id === viewingId));
 }
 
-AppCommon.onDomReady(initGames);
+AppCommon.registerLazySection('games', initGames);
 
